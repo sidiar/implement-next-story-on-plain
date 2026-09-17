@@ -10,7 +10,7 @@ development_status:
   # Epic 2: Core commands
   epic-2: in-progress
   2-1-add-item: done
-  2-2-list-items: backlog
+  2-2-list-items: review
   2-3-done-item: backlog
   2-4-remove-item: backlog
 

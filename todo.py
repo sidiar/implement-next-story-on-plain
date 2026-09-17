@@ -3,6 +3,7 @@
 implement-next-story is demonstrated on. Stdlib only.
 
     python3 todo.py add "buy milk"
+    python3 todo.py list
 """
 import json
 import os
@@ -33,10 +34,20 @@ def add(text: str) -> dict:
     return item
 
 
+def list_items() -> list[dict]:
+    """Return every item, sorted by id."""
+    return sorted(load(), key=lambda item: item["id"])
+
+
 def main(argv: list[str]) -> int:
     if len(argv) >= 2 and argv[0] == "add":
         item = add(" ".join(argv[1:]))
         print(f"added #{item['id']}: {item['text']}")
+        return 0
+    if len(argv) >= 1 and argv[0] == "list":
+        for item in list_items():
+            mark = "x" if item["done"] else " "
+            print(f"#{item['id']} [{mark}] {item['text']}")
         return 0
     print(__doc__.strip(), file=sys.stderr)
     return 2

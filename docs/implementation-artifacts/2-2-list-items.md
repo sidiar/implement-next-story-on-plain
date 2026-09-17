@@ -1,6 +1,6 @@
 # Story 2.2: list-items
 
-Status: review
+Status: done
 
 ## Story
 
@@ -38,6 +38,15 @@ so it comes now.
   two `[ ]` lines in id order; a file written directly with a done item and out-of-order
   ids prints `[x]` and sorts by id; the file is byte-identical after `list` (AC: 1–4)
 - [x] Task 4 — run `python3 -m unittest` and confirm every test passes (AC: 5)
+
+### Review Findings
+
+- [x] [Review][Patch] AC 3's "holds an empty list" case had no test — only the missing-file
+  case was covered; added `test_empty_list_file_prints_nothing_and_exits_0` [test_todo.py:51]
+- [x] [Review][Defer] `tempfile.mkdtemp()` in `setUp` is never removed, so every test run
+  leaks a temp dir [test_todo.py:18, test_todo.py:42] — deferred: pre-existing pattern from
+  `AddTests` (story 2-1) that Task 3 told the dev to copy; a `tearDown` / `TemporaryDirectory`
+  cleanup belongs to a test-hygiene change across both classes, not this story
 
 ## Dev Notes
 

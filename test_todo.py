@@ -48,6 +48,13 @@ class ListTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout, "")
 
+    def test_empty_list_file_prints_nothing_and_exits_0(self):
+        with open(self.file, "w") as fh:
+            json.dump([], fh)
+        result = run("list", env=self.env)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, "")
+
     def test_two_added_items_print_two_pending_lines_in_id_order(self):
         run("add", "one", env=self.env)
         run("add", "two", env=self.env)

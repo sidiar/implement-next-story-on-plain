@@ -118,3 +118,18 @@ them as they are, and the run stats are appended after them.
 
 Dev Model: sonnet   # follows the add() / main() pattern already in todo.py; a read-only command with a fixed output format
 Proposed lane gate: none
+
+---
+
+This story was implemented with the 'Implement next story' skill with the following stats:
+
+| Phase | Agent model | Agents | Active | Wall clock | Input | Output | Cache write | Cache read | Total tokens |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Step 0 — re-entry guard | — | 0 | 9s | 9s | 6 | 1,050 | 5,016 | 691,728 | 697,800 |
+| Step 1 — create | opus-5 | 1 | 1m 25s | 1m 25s | 34 | 6,157 | 64,962 | 1,244,151 | 1,315,304 |
+| Step 2 — implement | sonnet-5 | 1 | 2m 13s | 2m 13s | 106 | 12,085 | 115,211 | 3,026,658 | 3,154,060 |
+| Step 3 — review + PR | opus-5 | 1 | 2m 49s | 2m 49s | 48 | 10,855 | 62,214 | 2,177,162 | 2,250,279 |
+| _of which the orchestrator_ | opus-5 | — | — | — | 38 | 11,992 | 25,832 | 4,498,328 | 4,536,190 |
+| **Total (create → PR ready)** | | 3 | **6m 37s** | 6m 37s | 194 | 30,147 | 247,403 | 7,139,699 | **7,417,443** |
+
+Run started 2026-09-17 12:05 CEST; wall clock runs to the point the run stopped for the owner's review. No idle gaps were excluded; Active and Wall clock agree. (A gap counts as idle above 15 min.) Each phase row covers the phase agent, any agents it spawned, and the orchestrator's own turns in that window — the orchestrator row breaks its share out again, it is not additional. Cache reads dominate the token totals and are billed at a fraction of input rate, so read the Input and Output columns for effort and the total only as a ceiling. The orchestrator's final turn is still being written when these numbers are taken.

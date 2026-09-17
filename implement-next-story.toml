@@ -1,0 +1,24 @@
+# implement-next-story.toml — this project runs the `plain` adapter: no framework, the
+# plan in docs/planning-artifacts/epics.md, the board beside the story files.
+
+[adapter]
+name = "plain"
+
+[adapter.plain]
+check = ["python3 -m unittest"]
+
+[models]
+create        = "opus"
+dev           = "sonnet"
+dev_escalated = "opus"
+sync          = "sonnet"
+
+[models.review]
+sonnet = "opus"
+opus   = "fable"
+
+[paths]
+status_file = "docs/implementation-artifacts/sprint-status.yaml"
+stories_dir = "docs/implementation-artifacts"
+epics_file  = "docs/planning-artifacts/epics.md"
+gates_file  = "docs/implementation-artifacts/lane-gates.yaml"

@@ -1,0 +1,8 @@
+# lane-gates.yaml — cross-epic dependency gates for implement-next-story.
+# `analysed`: one entry per epic pair the owner has approved an analysis for.
+# `gates`: story X may not start until `requires` (a story key, or epic-N meaning every
+# N-* story) is done on main. Empty until a second epic opens beside epic 2.
+
+analysed:
+
+gates:

@@ -1,6 +1,6 @@
 # Story 2.3: done-item
 
-Status: review
+Status: in-progress
 
 ## Story
 
@@ -52,6 +52,11 @@ unknown-id behaviour, so it comes now.
   `done abc` → `no item #abc`, exit 1; `done` alone → exit 2; `list` after `done` shows
   `[x]` (AC: 1–7)
 - [x] Task 4 — run `python3 -m unittest` and confirm every test passes (AC: 7)
+
+### Review Findings
+
+- [ ] [Review][Decision] Non-integer id exit code (AC 5, Create-step addition not in the epic; inherited by 2-4 "unknown id behaves as in 2-3") — options: (a) keep as is: `done abc` → `no item #abc` on stderr, exit 1 (same as an unknown id); (b) treat a non-integer id as a malformed command: print usage on stderr, exit 2, so exit 1 means only "well-formed id, no such item"; (c) a distinct message such as `invalid id: abc` on stderr with exit 1 or 2
+- [x] [Review][Patch] AC 4 "holds an empty list" case untested, and AC 5 test does not assert empty stdout — added `test_unknown_id_with_empty_list_leaves_file_alone` and a stdout assertion [test_todo.py:140]
 
 ## Dev Notes
 

@@ -137,10 +137,21 @@ class DoneTests(unittest.TestCase):
         self.assertEqual(result.stderr.strip(), "no item #1")
         self.assertFalse(os.path.exists(self.file))
 
+    def test_unknown_id_with_empty_list_leaves_file_alone(self):
+        with open(self.file, "w") as fh:
+            fh.write("[]\n")
+        result = run("done", "1", env=self.env)
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.stderr.strip(), "no item #1")
+        self.assertEqual(result.stdout, "")
+        with open(self.file) as fh:
+            self.assertEqual(fh.read(), "[]\n")
+
     def test_non_integer_id_is_unknown(self):
         result = run("done", "abc", env=self.env)
         self.assertEqual(result.returncode, 1)
         self.assertEqual(result.stderr.strip(), "no item #abc")
+        self.assertEqual(result.stdout, "")
         self.assertNotIn("Traceback", result.stderr)
 
     def test_done_without_id_prints_usage_and_exits_2(self):

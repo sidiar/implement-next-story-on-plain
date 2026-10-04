@@ -63,9 +63,11 @@ def main(argv: list[str]) -> int:
         return 0
     if len(argv) >= 2 and argv[0] == "done":
         try:
-            item = done(int(argv[1]))
+            item_id = int(argv[1])
         except ValueError:
             item = None
+        else:
+            item = done(item_id)
         if item is None:
             print(f"no item #{argv[1]}", file=sys.stderr)
             return 1

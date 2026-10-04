@@ -1,6 +1,6 @@
 # Story 2.3: done-item
 
-Status: in-progress
+Status: done
 
 ## Story
 
@@ -55,8 +55,10 @@ unknown-id behaviour, so it comes now.
 
 ### Review Findings
 
-- [ ] [Review][Decision] Non-integer id exit code (AC 5, Create-step addition not in the epic; inherited by 2-4 "unknown id behaves as in 2-3") — options: (a) keep as is: `done abc` → `no item #abc` on stderr, exit 1 (same as an unknown id); (b) treat a non-integer id as a malformed command: print usage on stderr, exit 2, so exit 1 means only "well-formed id, no such item"; (c) a distinct message such as `invalid id: abc` on stderr with exit 1 or 2
+- [x] [Review][Decision] Non-integer id exit code (AC 5, Create-step addition not in the epic; inherited by 2-4 "unknown id behaves as in 2-3") — options: (a) keep as is: `done abc` → `no item #abc` on stderr, exit 1 (same as an unknown id); (b) treat a non-integer id as a malformed command: print usage on stderr, exit 2, so exit 1 means only "well-formed id, no such item"; (c) a distinct message such as `invalid id: abc` on stderr with exit 1 or 2
+  - **Owner's answer (2026-10-04):** (a) — keep as is. `done abc` prints `no item #abc` on stderr and exits 1, the same as an unknown id; story 2-4 inherits it.
 - [x] [Review][Patch] AC 4 "holds an empty list" case untested, and AC 5 test does not assert empty stdout — added `test_unknown_id_with_empty_list_leaves_file_alone` and a stdout assertion [test_todo.py:140]
+- [x] [Review][Patch] `try` around `done(int(argv[1]))` also catches `json.JSONDecodeError` (a `ValueError`) from `load()`, so a corrupt `TODO_FILE` is reported as `no item #<id>` / exit 1 instead of failing like `add` / `list` — narrowed the `try` to the `int()` parse, per Task 2 [todo.py:65]
 
 ## Dev Notes
 
@@ -120,6 +122,8 @@ unknown-id behaviour, so it comes now.
 ### Completion Notes
 
 `done(item_id)` mirrors `add()`; main() maps ValueError and None to the shared `no item #<arg>` / exit 1 path. `save()` is only called on a match, so a missing file is never created. 8 DoneTests added; `python3 -m unittest` passes.
+
+Review decision resolved (owner, 2026-10-04): option (a), keep as is. `done abc` prints `no item #abc` on stderr and exits 1, same as an unknown id; story 2-4 inherits this. No code change was needed; the existing implementation and `test_non_integer_id_is_unknown` already match. Re-ran `python3 -m unittest`: 17 tests, OK.
 
 ---
 

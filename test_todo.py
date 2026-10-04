@@ -86,5 +86,84 @@ class ListTests(unittest.TestCase):
         self.assertEqual(before, after)
 
 
+class DoneTests(unittest.TestCase):
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+        self.file = os.path.join(self.dir, "todo.json")
+        self.env = {**os.environ, "TODO_FILE": self.file}
+
+    def read(self):
+        with open(self.file) as fh:
+            return json.load(fh)
+
+    def test_done_marks_item_and_prints_line(self):
+        run("add", "buy milk", env=self.env)
+        result = run("done", "1", env=self.env)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "done #1: buy milk")
+        self.assertEqual(self.read(), [{"id": 1, "text": "buy milk", "done": True}])
+
+    def test_only_the_target_changes(self):
+        run("add", "one", env=self.env)
+        run("add", "two", env=self.env)
+        run("done", "2", env=self.env)
+        self.assertEqual(
+            self.read(),
+            [{"id": 1, "text": "one", "done": False}, {"id": 2, "text": "two", "done": True}],
+        )
+
+    def test_done_twice_succeeds(self):
+        run("add", "one", env=self.env)
+        run("done", "1", env=self.env)
+        result = run("done", "1", env=self.env)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), "done #1: one")
+        self.assertTrue(self.read()[0]["done"])
+
+    def test_unknown_id_exits_1_and_leaves_file_alone(self):
+        run("add", "one", env=self.env)
+        with open(self.file, "rb") as fh:
+            before = fh.read()
+        result = run("done", "9", env=self.env)
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.stderr.strip(), "no item #9")
+        self.assertEqual(result.stdout, "")
+        with open(self.file, "rb") as fh:
+            self.assertEqual(fh.read(), before)
+
+    def test_unknown_id_with_no_file_does_not_create_it(self):
+        result = run("done", "1", env=self.env)
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.stderr.strip(), "no item #1")
+        self.assertFalse(os.path.exists(self.file))
+
+    def test_unknown_id_with_empty_list_leaves_file_alone(self):
+        with open(self.file, "w") as fh:
+            fh.write("[]\n")
+        result = run("done", "1", env=self.env)
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.stderr.strip(), "no item #1")
+        self.assertEqual(result.stdout, "")
+        with open(self.file) as fh:
+            self.assertEqual(fh.read(), "[]\n")
+
+    def test_non_integer_id_is_unknown(self):
+        result = run("done", "abc", env=self.env)
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.stderr.strip(), "no item #abc")
+        self.assertEqual(result.stdout, "")
+        self.assertNotIn("Traceback", result.stderr)
+
+    def test_done_without_id_prints_usage_and_exits_2(self):
+        result = run("done", env=self.env)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("todo.py add", result.stderr)
+
+    def test_list_shows_done_item(self):
+        run("add", "one", env=self.env)
+        run("done", "1", env=self.env)
+        self.assertEqual(run("list", env=self.env).stdout.strip(), "#1 [x] one")
+
+
 if __name__ == "__main__":
     unittest.main()
